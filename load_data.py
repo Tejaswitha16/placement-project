@@ -3,7 +3,7 @@ import pandas as pd
 
 DATA_PATH = os.path.join(
     os.path.dirname(__file__),
-    r"C:\Users\hp\PycharmProjects\PythonProject5\placement_predict_50k Dataset (3)(in).csv"
+    r"C:\Users\hp\PycharmProjects\PythonProject2\placement_predict_50k Dataset (3)(in).csv"
 )
 
 
