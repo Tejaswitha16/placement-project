@@ -1,0 +1,1213 @@
+{% extends "base.html" %}
+
+{% block title %}
+Logistic Regression
+{% endblock %}
+
+{% block content %}
+
+<div class="lr-header">
+
+    <h2>Logistic Regression</h2>
+
+    <p>
+        Predict whether a student will be placed or not placed.
+    </p>
+
+</div>
+
+
+{% if error %}
+
+<div class="error">
+    {{ error }}
+</div>
+
+{% endif %}
+
+
+<!-- ==========================================================
+     MODEL DROPDOWNS
+=========================================================== -->
+
+<div class="lr-dropdown-container">
+
+
+    <!-- ======================================================
+         LOGISTIC REGRESSION - NO REGULARIZATION
+    ======================================================= -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    📊
+                </div>
+
+                <div>
+
+                    <h3>Logistic Regression</h3>
+
+                    <span class="lr-badge">
+                        Without Regularization
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                Standard Logistic Regression is used for binary
+                classification. It predicts whether a student
+                will be placed or not placed.
+            </p>
+
+            <ul>
+
+                <li>
+                    Binary classification
+                </li>
+
+                <li>
+                    No regularization penalty
+                </li>
+
+                <li>
+                    Target: PlacementStatus
+                </li>
+
+            </ul>
+
+
+            <a
+                href="{{ url_for('logistic_regression_without') }}"
+                class="lr-button"
+            >
+
+                Explore Model →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+
+    <!-- ======================================================
+         LOGISTIC REGRESSION - L2
+    ======================================================= -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    🛡️
+                </div>
+
+                <div>
+
+                    <h3>Logistic Regression</h3>
+
+                    <span class="lr-badge ridge-badge">
+                        With L2 Regularization
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                L2 regularization controls large coefficients
+                and helps reduce overfitting.
+            </p>
+
+            <ul>
+
+                <li>
+                    Binary classification
+                </li>
+
+                <li>
+                    L2 regularization
+                </li>
+
+                <li>
+                    Helps control overfitting
+                </li>
+
+                <li>
+                    Target: PlacementStatus
+                </li>
+
+            </ul>
+
+
+            <a
+                href="{{ url_for('logistic_regression_with') }}"
+                class="lr-button ridge-button"
+            >
+
+                Explore Model →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+
+    <!-- ======================================================
+         LOGISTIC REGRESSION - L1 / LASSO
+    ======================================================= -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    🔵
+                </div>
+
+                <div>
+
+                    <h3>Logistic Regression</h3>
+
+                    <span class="lr-badge lasso-badge">
+                        With L1 (Lasso) Regularization
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                L1 regularization, also called Lasso regularization,
+                helps reduce overfitting and can shrink some
+                coefficients to zero.
+            </p>
+
+            <ul>
+
+                <li>
+                    Binary classification
+                </li>
+
+                <li>
+                    L1 (Lasso) regularization
+                </li>
+
+                <li>
+                    Helps perform feature selection
+                </li>
+
+                <li>
+                    Target: PlacementStatus
+                </li>
+
+            </ul>
+
+
+            <a
+                href="{{ url_for('logistic_regression_lasso') }}"
+                class="lr-button lasso-button"
+            >
+
+                Explore Model →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+</div>
+
+
+
+<!-- ==========================================================
+     RESULTS
+=========================================================== -->
+
+{% if results %}
+
+<div class="lr-result-section">
+
+    <h2>
+        {{ results.model_name }}
+    </h2>
+
+    <p>
+
+        Regularization:
+
+        <strong>
+            {{ results.regularization }}
+        </strong>
+
+    </p>
+
+
+
+    <!-- ======================================================
+         ABOUT
+    ======================================================= -->
+
+    <div class="lr-info-box">
+
+        <h3>
+            📚 About Logistic Regression
+        </h3>
+
+        <p>
+            Logistic Regression is a classification algorithm
+            used to predict the probability of an outcome.
+        </p>
+
+        <p>
+            In this project, the model predicts
+            <strong>PlacementStatus</strong>.
+        </p>
+
+        <p>
+
+            <strong>0 = Not Placed</strong>
+
+            &nbsp;&nbsp;
+
+            <strong>1 = Placed</strong>
+
+        </p>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         TRAINING INFORMATION
+    ======================================================= -->
+
+    <h3 class="section-title">
+        📊 Training Information
+    </h3>
+
+
+    <div class="lr-stats">
+
+
+        <div class="stat-box">
+
+            <span>
+                Total Rows
+            </span>
+
+            <strong>
+                {{ results.total_rows }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <span>
+                Features
+            </span>
+
+            <strong>
+                {{ results.total_features }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <span>
+                Training Rows
+            </span>
+
+            <strong>
+                {{ results.training_rows }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <span>
+                Testing Rows
+            </span>
+
+            <strong>
+                {{ results.testing_rows }}
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ======================================================
+         MODEL PERFORMANCE
+    ======================================================= -->
+
+    <h3 class="section-title">
+        📈 Model Performance
+    </h3>
+
+
+    <div class="lr-metrics">
+
+
+        <div class="metric-box highlight">
+
+            <span>
+                Accuracy
+            </span>
+
+            <strong>
+                {{ results.accuracy }}%
+            </strong>
+
+        </div>
+
+
+        <div class="metric-box">
+
+            <span>
+                Precision
+            </span>
+
+            <strong>
+                {{ results.precision }}%
+            </strong>
+
+        </div>
+
+
+        <div class="metric-box">
+
+            <span>
+                Recall
+            </span>
+
+            <strong>
+                {{ results.recall }}%
+            </strong>
+
+        </div>
+
+
+        <div class="metric-box">
+
+            <span>
+                F1 Score
+            </span>
+
+            <strong>
+                {{ results.f1 }}%
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ======================================================
+         CONFUSION MATRIX
+    ======================================================= -->
+
+    <h3 class="section-title">
+        🎯 Confusion Matrix
+    </h3>
+
+
+    <div class="table-wrapper">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+
+                    <th></th>
+
+                    <th>
+                        Predicted 0
+                    </th>
+
+                    <th>
+                        Predicted 1
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <th>
+                        Actual 0
+                    </th>
+
+                    <td>
+                        {{ results.confusion_matrix[0][0] }}
+                    </td>
+
+                    <td>
+                        {{ results.confusion_matrix[0][1] }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Actual 1
+                    </th>
+
+                    <td>
+                        {{ results.confusion_matrix[1][0] }}
+                    </td>
+
+                    <td>
+                        {{ results.confusion_matrix[1][1] }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+{% else %}
+
+
+<!-- ==========================================================
+     EMPTY STATE
+=========================================================== -->
+
+<div class="lr-empty">
+
+    <div class="empty-icon">
+        🎓
+    </div>
+
+    <h3>
+        Select a Logistic Regression Model
+    </h3>
+
+    <p>
+        Choose a model above to train it and view performance
+        metrics and confusion matrix.
+    </p>
+
+</div>
+
+
+{% endif %}
+
+
+
+<!-- ==========================================================
+     PAGE-SPECIFIC CSS
+=========================================================== -->
+
+<style>
+
+
+/* ==========================================================
+   HEADER
+=========================================================== */
+
+.lr-header {
+    margin-bottom: 30px;
+}
+
+
+.lr-header h2 {
+    margin-bottom: 10px;
+}
+
+
+.lr-header p {
+    color: #555;
+    font-size: 17px;
+}
+
+
+
+/* ==========================================================
+   DROPDOWN CONTAINER
+=========================================================== */
+
+.lr-dropdown-container {
+    width: 100%;
+    margin-top: 25px;
+}
+
+
+
+/* ==========================================================
+   DROPDOWN
+=========================================================== */
+
+.lr-dropdown {
+
+    background: #ffffff;
+
+    border: 1px solid #e3e6eb;
+
+    border-radius: 14px;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.08);
+
+    overflow: hidden;
+}
+
+
+
+/* ==========================================================
+   REMOVE DEFAULT ARROW
+=========================================================== */
+
+.lr-dropdown summary {
+    list-style: none;
+}
+
+
+.lr-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+
+
+
+/* ==========================================================
+   DROPDOWN HEADER
+=========================================================== */
+
+.lr-dropdown summary {
+
+    cursor: pointer;
+
+    padding: 22px 28px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    transition: background 0.2s ease;
+}
+
+
+.lr-dropdown summary:hover {
+    background: #f8fafc;
+}
+
+
+
+/* ==========================================================
+   TITLE
+=========================================================== */
+
+.lr-dropdown-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+.lr-dropdown-title h3 {
+
+    margin: 0 0 8px 0;
+
+    font-size: 22px;
+}
+
+
+
+/* ==========================================================
+   ICON
+=========================================================== */
+
+.lr-icon {
+
+    font-size: 32px;
+
+    width: 50px;
+
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #f1f5f9;
+
+    border-radius: 12px;
+}
+
+
+
+/* ==========================================================
+   BADGE
+=========================================================== */
+
+.lr-badge {
+
+    display: inline-block;
+
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    background: #e8f0ff;
+
+    color: #1d4ed8;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+
+/* ==========================================================
+   L2 BADGE
+=========================================================== */
+
+.ridge-badge {
+
+    background: #e8f8ef;
+
+    color: #15803d;
+}
+
+
+
+/* ==========================================================
+   L1 / LASSO BADGE
+=========================================================== */
+
+.lasso-badge {
+
+    background: #f3e8ff;
+
+    color: #7e22ce;
+}
+
+
+
+/* ==========================================================
+   ARROW
+=========================================================== */
+
+.lr-arrow {
+
+    font-size: 18px;
+
+    transition: transform 0.3s ease;
+}
+
+
+.lr-dropdown[open] .lr-arrow {
+
+    transform: rotate(180deg);
+}
+
+
+
+/* ==========================================================
+   DROPDOWN CONTENT
+=========================================================== */
+
+.lr-dropdown-content {
+
+    padding: 5px 28px 28px 28px;
+
+    border-top: 1px solid #eeeeee;
+}
+
+
+.lr-dropdown-content p {
+
+    color: #555;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+
+    margin-top: 20px;
+}
+
+
+.lr-dropdown-content ul {
+
+    margin-top: 18px;
+
+    padding-left: 22px;
+}
+
+
+.lr-dropdown-content li {
+
+    margin-bottom: 12px;
+
+    color: #444;
+}
+
+
+
+/* ==========================================================
+   BUTTON
+=========================================================== */
+
+.lr-button {
+
+    display: inline-block;
+
+    margin-top: 15px;
+
+    padding: 12px 22px;
+
+    background: #2563eb;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+
+.lr-button:hover {
+
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+
+
+/* ==========================================================
+   L2 BUTTON
+=========================================================== */
+
+.ridge-button {
+
+    background: #15803d;
+}
+
+
+.ridge-button:hover {
+
+    background: #166534;
+}
+
+
+
+/* ==========================================================
+   L1 / LASSO BUTTON
+=========================================================== */
+
+.lasso-button {
+
+    background: #7e22ce;
+}
+
+
+.lasso-button:hover {
+
+    background: #6b21a8;
+}
+
+
+
+/* ==========================================================
+   RESULT SECTION
+=========================================================== */
+
+.lr-result-section {
+
+    margin-top: 30px;
+
+    background: #ffffff;
+
+    padding: 30px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.08);
+}
+
+
+
+/* ==========================================================
+   INFO BOX
+=========================================================== */
+
+.lr-info-box {
+
+    margin-top: 25px;
+
+    padding: 22px;
+
+    background: #f8fafc;
+
+    border-left: 4px solid #2563eb;
+
+    border-radius: 8px;
+}
+
+
+.lr-info-box h3 {
+
+    margin-top: 0;
+}
+
+
+.lr-info-box p {
+
+    color: #555;
+
+    line-height: 1.7;
+}
+
+
+
+/* ==========================================================
+   SECTION TITLE
+=========================================================== */
+
+.section-title {
+
+    margin-top: 32px;
+
+    margin-bottom: 18px;
+}
+
+
+
+/* ==========================================================
+   TRAINING STATS
+=========================================================== */
+
+.lr-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+
+.stat-box {
+
+    background: #f8fafc;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+
+.stat-box span {
+
+    display: block;
+
+    color: #666;
+
+    font-size: 14px;
+
+    margin-bottom: 8px;
+}
+
+
+.stat-box strong {
+
+    font-size: 24px;
+}
+
+
+
+/* ==========================================================
+   METRICS
+=========================================================== */
+
+.lr-metrics {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+
+.metric-box {
+
+    background: #f8fafc;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+
+.metric-box span {
+
+    display: block;
+
+    color: #666;
+
+    margin-bottom: 8px;
+}
+
+
+.metric-box strong {
+
+    font-size: 22px;
+}
+
+
+.metric-box.highlight {
+
+    border: 2px solid #2563eb;
+}
+
+
+
+/* ==========================================================
+   TABLE
+=========================================================== */
+
+.table-wrapper {
+
+    overflow-x: auto;
+}
+
+
+.data-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: #ffffff;
+}
+
+
+.data-table th,
+.data-table td {
+
+    padding: 13px 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    text-align: left;
+}
+
+
+.data-table th {
+
+    background: #f8fafc;
+
+    font-weight: 600;
+}
+
+
+
+/* ==========================================================
+   EMPTY STATE
+=========================================================== */
+
+.lr-empty {
+
+    margin-top: 30px;
+
+    padding: 50px 30px;
+
+    text-align: center;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.08);
+}
+
+
+.empty-icon {
+
+    font-size: 45px;
+
+    margin-bottom: 15px;
+}
+
+
+.lr-empty h3 {
+
+    margin-bottom: 10px;
+}
+
+
+.lr-empty p {
+
+    color: #666;
+
+    max-width: 600px;
+
+    margin: auto;
+
+    line-height: 1.6;
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media (max-width: 900px) {
+
+    .lr-stats,
+    .lr-metrics {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .lr-dropdown summary {
+
+        padding: 18px;
+    }
+
+
+    .lr-dropdown-title {
+
+        gap: 12px;
+    }
+
+
+    .lr-dropdown-title h3 {
+
+        font-size: 18px;
+    }
+
+
+    .lr-icon {
+
+        width: 42px;
+
+        height: 42px;
+
+        font-size: 25px;
+    }
+
+
+    .lr-dropdown-content {
+
+        padding:
+            5px 18px 22px 18px;
+    }
+
+
+    .lr-stats,
+    .lr-metrics {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .lr-result-section {
+
+        padding: 20px;
+    }
+
+}
+
+</style>
+
+
+{% endblock %}
