@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Model Training{% endblock %}
+
+{% block content %}
+
+<h2>Model Training</h2>
+
+{% if error %}
+<div class="error">
+    {{ error }}
+</div>
+{% endif %}
+
+{% if results %}
+
+<table class="summary-table">
+
+    <tr>
+        <td>Target Column</td>
+        <td>{{ results.target_column }}</td>
+    </tr>
+
+    <tr>
+        <td>Total Rows</td>
+        <td>{{ results.total_rows }}</td>
+    </tr>
+
+    <tr>
+        <td>Total Features</td>
+        <td>{{ results.total_features }}</td>
+    </tr>
+
+    <tr>
+        <td>Training Rows</td>
+        <td>{{ results.training_rows }}</td>
+    </tr>
+
+    <tr>
+        <td>Testing Rows</td>
+        <td>{{ results.testing_rows }}</td>
+    </tr>
+
+    <tr>
+        <td>Accuracy</td>
+        <td>{{ results.accuracy }}%</td>
+    </tr>
+
+</table>
+
+{% endif %}
+
+{% endblock %}
