@@ -1,102 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Placement Prediction Project</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<header class="topbar">
-    <h1>Placement Prediction Project</h1>
-</header>
+{% block title %}Data Loading{% endblock %}
 
-<div class="layout">
-    <!-- Left panel -->
-    <nav class="sidebar">
-        <ul>
-            <li>
-                <a href="{{ url_for('data_loading') }}"
-                   class="menu-item {% if active == 'data-loading' %}active{% endif %}">
-                    Data Loading
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('eda_page') }}"
-               class="menu-item {% if active == 'eda' %}active{% endif %}">
-                EDA
-            </a>
-            </li>
-            <li class="menu-item disabled">Preprocessing (coming soon)</li>
-            <li class="menu-item disabled">Model Training (coming soon)</li>
-            <li class="menu-item disabled">Prediction (coming soon)</li>
-        </ul>
-    </nav>
+{% block content %}
 
-    <!-- Main content -->
-    <main class="content">
+<h2>Data Loading</h2>
 
-        {% if active == 'none' %}
-            <p>Select an option from the left panel to get started.</p>
-        {% endif %}
+{% if error %}
+<div class="error">
+    {{ error }}
+</div>
+{% endif %}
 
-        {% if active == 'data-loading' %}
-            <h2>Data Loading</h2>
+{% if summary %}
 
-            {% if error %}
-                <div class="error">{{ error }}</div>
-            {% endif %}
+<table class="summary-table">
 
-            {% if summary %}
-                <table class="summary-table">
-                    <tr><td>Rows</td><td>{{ summary.n_rows }}</td></tr>
-                    <tr><td>Columns</td><td>{{ summary.n_cols }}</td></tr>
-                </table>
+    <tr>
+        <td>Rows</td>
+        <td>{{ summary.n_rows }}</td>
+    </tr>
 
-                <h3>Column Info</h3>
-                <div class="table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>Column</th><th>Dtype</th><th>Missing Values</th></tr>
-                        </thead>
-                        <tbody>
-                        {% for col in summary.columns %}
-                            <tr>
-                                <td>{{ col }}</td>
-                                <td>{{ summary.dtypes[col] }}</td>
-                                <td>{{ summary.missing_counts[col] }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+    <tr>
+        <td>Columns</td>
+        <td>{{ summary.n_cols }}</td>
+    </tr>
 
-                <h3>Preview (first 10 rows)</h3>
-                <div class="table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                            {% for col in summary.columns %}
-                                <th>{{ col }}</th>
-                            {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for row in summary.preview %}
-                            <tr>
-                            {% for col in summary.columns %}
-                                <td>{{ row[col] }}</td>
-                            {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% endif %}
-        {% endif %}
+</table>
 
-    </main>
+<h3>Column Info</h3>
+
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Dtype</th>
+                <th>Missing Values</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for col in summary.columns %}
+
+        <tr>
+            <td>{{ col }}</td>
+            <td>{{ summary.dtypes[col] }}</td>
+            <td>{{ summary.missing_counts[col] }}</td>
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
 </div>
 
-</body>
-</html>
+<h3>Preview (first 10 rows)</h3>
+
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+
+            {% for col in summary.columns %}
+                <th>{{ col }}</th>
+            {% endfor %}
+
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for row in summary.preview %}
+
+        <tr>
+
+            {% for col in summary.columns %}
+                <td>{{ row[col] }}</td>
+            {% endfor %}
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

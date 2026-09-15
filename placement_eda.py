@@ -1,14 +1,24 @@
 import os
 import pandas as pd
+
 import matplotlib
 matplotlib.use("Agg")
-#
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 from load_data import load_data
 
-CHARTS_DIR = os.path.join(os.path.dirname(__file__), "static", "charts")
+
+# ============================================================
+# CHART DIRECTORY
+# ============================================================
+
+CHARTS_DIR = os.path.join(
+    os.path.dirname(__file__),
+    "static",
+    "charts"
+)
 
 
 def _chart_path(filename):
@@ -16,7 +26,15 @@ def _chart_path(filename):
     return os.path.join(CHARTS_DIR, filename)
 
 
+# ============================================================
+# RUN EDA
+# ============================================================
+
 def run_eda():
+
+    # ========================================================
+    # LOAD DATA
+    # ========================================================
 
     data = load_data()
 
@@ -24,198 +42,452 @@ def run_eda():
 
     sns.set_style("whitegrid")
 
-    # Missing Values
-    missing = data.isnull().sum()
-    missing = missing[missing > 0]
 
-    if not missing.empty:
+    # ========================================================
+    # BASIC INFORMATION
+    # ========================================================
 
-        plt.figure(figsize=(10,5))
-        sns.barplot(x=missing.index, y=missing.values)
-
-        plt.xticks(rotation=45)
-        plt.title("Missing Values")
-
-        plt.tight_layout()
-        plt.savefig(_chart_path("missing_values.png"))
-        plt.close()
-
-        charts.append("missing_values.png")
-
-        plt.figure(figsize=(12,6))
-        sns.heatmap(data.isnull(), cbar=False)
-
-        plt.title("Missing Value Heatmap")
-
-        plt.tight_layout()
-        plt.savefig(_chart_path("missing_heatmap.png"))
-        plt.close()
-
-        charts.append("missing_heatmap.png")
-
-    duplicates = int(data.duplicated().sum())
-
-    target_counts = data["PlacementStatus"].value_counts().to_dict()
-
-    plt.figure(figsize=(6,5))
-
-    sns.countplot(
-        x="PlacementStatus",
-        data=data
+    duplicates = int(
+        data.duplicated().sum()
     )
 
-    plt.title("Placement Status Distribution")
 
-    plt.tight_layout()
-
-    plt.savefig(_chart_path("placement_status.png"))
-    plt.close()
-
-    charts.append("placement_status.png")
-
-
-
+    # ========================================================
+    # NUMERIC DISTRIBUTIONS
+    # ========================================================
 
     hist_cols = [
         "CGPA",
         "AttendancePercent",
         "AptitudeTestScore",
+        "SoftSkillsRating",
         "SoftSkillRating",
         "CodingTestScore",
         "MockInterviewScore"
     ]
 
-    hist_cols = [c for c in hist_cols if c in data.columns]
+    # Keep only columns that actually exist
+
+    hist_cols = [
+        c for c in hist_cols
+        if c in data.columns
+    ]
+
+    # Remove duplicate column names
+
+    hist_cols = list(
+        dict.fromkeys(hist_cols)
+    )
+
 
     if hist_cols:
 
-        data[hist_cols].hist(figsize=(14,10), bins=20)
+        filename = "numeric_distributions.png"
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("numeric_distributions.png"))
-        plt.close()
+        numeric_data = data[hist_cols].copy()
 
-        charts.append("numeric_distributions.png")
+        # Convert to numeric safely
+
+        for col in hist_cols:
+            numeric_data[col] = pd.to_numeric(
+                numeric_data[col],
+                errors="coerce"
+            )
+
+        # Create figure
+
+        fig, axes = plt.subplots(
+            2,
+            3,
+            figsize=(15, 9)
+        )
+
+        axes = axes.flatten()
+
+        for i, col in enumerate(hist_cols):
+
+            axes[i].hist(
+                numeric_data[col].dropna(),
+                bins=20
+            )
+
+            axes[i].set_title(
+                col
+            )
+
+            axes[i].set_xlabel(
+                col
+            )
+
+            axes[i].set_ylabel(
+                "Frequency"
+            )
+
+        # Hide unused axes
+
+        for i in range(
+            len(hist_cols),
+            len(axes)
+        ):
+            axes[i].set_visible(False)
+
+        fig.suptitle(
+            "Numeric Feature Distributions",
+            fontsize=16
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
+
+
+    # ========================================================
+    # CGPA DISTRIBUTION
+    # ========================================================
 
     if "CGPA" in data.columns:
 
-        plt.figure(figsize=(8,5))
+        filename = "cgpa_distribution.png"
 
-        sns.histplot(data["CGPA"], kde=True)
+        cgpa = pd.to_numeric(
+            data["CGPA"],
+            errors="coerce"
+        ).dropna()
 
-        plt.axvline(
-            data["CGPA"].mean(),
-            color="green",
-            linestyle="--",
-            label="Mean"
+        fig, ax = plt.subplots(
+            figsize=(8, 5)
         )
 
-        plt.legend()
-        plt.title("CGPA Distribution")
+        sns.histplot(
+            cgpa,
+            kde=True,
+            ax=ax
+        )
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("cgpa_distribution.png"))
-        plt.close()
+        if len(cgpa) > 0:
 
-        charts.append("cgpa_distribution.png")
+            ax.axvline(
+                cgpa.mean(),
+                linestyle="--",
+                label="Mean"
+            )
+
+        ax.set_title(
+            "CGPA Distribution"
+        )
+
+        ax.set_xlabel(
+            "CGPA"
+        )
+
+        ax.set_ylabel(
+            "Frequency"
+        )
+
+        ax.legend()
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
 
 
-
+    # ========================================================
+    # BOXPLOTS
+    # ========================================================
 
     box_cols = [
         "CGPA",
         "AttendancePercent",
         "AptitudeTestScore",
+        "SoftSkillsRating",
         "SoftSkillRating",
         "CodingTestScore",
         "MockInterviewScore",
         "Salary Package"
     ]
 
-    box_cols = [c for c in box_cols if c in data.columns]
+    box_cols = [
+        c for c in box_cols
+        if c in data.columns
+    ]
+
+    box_cols = list(
+        dict.fromkeys(box_cols)
+    )
+
 
     for col in box_cols:
 
-        plt.figure(figsize=(8,4))
+        filename = (
+            f"boxplot_{col.replace(' ', '_')}.png"
+        )
 
-        sns.boxplot(x=data[col], color="skyblue")
+        values = pd.to_numeric(
+            data[col],
+            errors="coerce"
+        ).dropna()
 
-        plt.title(f"Boxplot - {col}")
+        fig, ax = plt.subplots(
+            figsize=(8, 4)
+        )
 
-        plt.tight_layout()
+        sns.boxplot(
+            x=values,
+            ax=ax
+        )
 
-        filename = f"boxplot_{col.replace(' ','_')}.png"
+        ax.set_title(
+            f"Boxplot - {col}"
+        )
 
-        plt.savefig(_chart_path(filename))
-        plt.close()
+        ax.set_xlabel(
+            col
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
 
         charts.append(filename)
 
 
+    # ========================================================
+    # CORRELATION HEATMAP
+    # ========================================================
+
+    filename = "correlation_heatmap.png"
+
+    numeric_df = data.select_dtypes(
+        include="number"
+    ).copy()
+
+    # Limit rows only for speed
+
+    if len(numeric_df) > 2000:
+
+        numeric_sample = numeric_df.sample(
+            2000,
+            random_state=42
+        )
+
+    else:
+
+        numeric_sample = numeric_df
 
 
-    corr = data.select_dtypes(include="number").corr()
+    corr = numeric_sample.corr()
 
-    plt.figure(figsize=(14,10))
+    fig, ax = plt.subplots(
+        figsize=(15, 11)
+    )
 
     sns.heatmap(
         corr,
         annot=True,
         cmap="coolwarm",
-        fmt=".2f"
+        fmt=".2f",
+        linewidths=0.5,
+        ax=ax
     )
 
-    plt.title("Correlation Heatmap")
+    ax.set_title(
+        "Correlation Heatmap"
+    )
 
-    plt.tight_layout()
-    plt.savefig(_chart_path("correlation_heatmap.png"))
-    plt.close()
+    fig.tight_layout()
 
-    charts.append("correlation_heatmap.png")
+    fig.savefig(
+        _chart_path(filename),
+        dpi=120,
+        bbox_inches="tight"
+    )
+
+    plt.close(fig)
+
+    charts.append(filename)
 
 
+    # ========================================================
+    # CGPA VS SALARY PACKAGE
+    # ========================================================
 
+    if (
+        "CGPA" in data.columns
+        and
+        "Salary Package" in data.columns
+    ):
 
-    if "CGPA" in data.columns and "Salary Package" in data.columns:
+        filename = "cgpa_salary.png"
 
-        plt.figure(figsize=(8,5))
+        plot_data = data[
+            [
+                "CGPA",
+                "Salary Package"
+            ]
+        ].copy()
+
+        plot_data["CGPA"] = pd.to_numeric(
+            plot_data["CGPA"],
+            errors="coerce"
+        )
+
+        plot_data["Salary Package"] = pd.to_numeric(
+            plot_data["Salary Package"],
+            errors="coerce"
+        )
+
+        plot_data = plot_data.dropna()
+
+        if len(plot_data) > 5000:
+
+            plot_data = plot_data.sample(
+                5000,
+                random_state=42
+            )
+
+        fig, ax = plt.subplots(
+            figsize=(8, 5)
+        )
 
         sns.regplot(
             x="CGPA",
             y="Salary Package",
-            data=data,
-            color="red"
+            data=plot_data,
+            scatter_kws={
+                "s": 20,
+                "alpha": 0.5
+            },
+            ax=ax
         )
 
-        plt.title("CGPA vs Salary Package")
+        ax.set_title(
+            "CGPA vs Salary Package"
+        )
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("cgpa_salary.png"))
-        plt.close()
+        ax.set_xlabel(
+            "CGPA"
+        )
 
-        charts.append("cgpa_salary.png")
+        ax.set_ylabel(
+            "Salary Package"
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
 
 
-    if "CodingTestScore" in data.columns and "AptitudeTestScore" in data.columns:
+    # ========================================================
+    # CODING TEST VS APTITUDE TEST
+    # ========================================================
 
-        plt.figure(figsize=(8,5))
+    if (
+        "CodingTestScore" in data.columns
+        and
+        "AptitudeTestScore" in data.columns
+    ):
+
+        filename = "coding_aptitude.png"
+
+        plot_data = data[
+            [
+                "CodingTestScore",
+                "AptitudeTestScore"
+            ]
+        ].copy()
+
+        plot_data["CodingTestScore"] = pd.to_numeric(
+            plot_data["CodingTestScore"],
+            errors="coerce"
+        )
+
+        plot_data["AptitudeTestScore"] = pd.to_numeric(
+            plot_data["AptitudeTestScore"],
+            errors="coerce"
+        )
+
+        plot_data = plot_data.dropna()
+
+        if len(plot_data) > 5000:
+
+            plot_data = plot_data.sample(
+                5000,
+                random_state=42
+            )
+
+        fig, ax = plt.subplots(
+            figsize=(8, 5)
+        )
 
         sns.regplot(
             x="CodingTestScore",
             y="AptitudeTestScore",
-            data=data,
-            color="red"
+            data=plot_data,
+            scatter_kws={
+                "s": 20,
+                "alpha": 0.5
+            },
+            ax=ax
         )
 
-        plt.title("Coding Test Score vs Aptitude Test Score")
+        ax.set_title(
+            "Coding Test Score vs Aptitude Test Score"
+        )
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("coding_aptitude.png"))
-        plt.close()
+        ax.set_xlabel(
+            "Coding Test Score"
+        )
 
-        charts.append("coding_aptitude.png")
+        ax.set_ylabel(
+            "Aptitude Test Score"
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
 
 
+    # ========================================================
+    # CATEGORICAL COUNTS
+    # ========================================================
 
     cat_cols = [
         "Gender",
@@ -228,136 +500,329 @@ def run_eda():
         "CGPA_Tier"
     ]
 
-    cat_cols = [c for c in cat_cols if c in data.columns]
+    cat_cols = [
+        c for c in cat_cols
+        if c in data.columns
+    ]
+
 
     for col in cat_cols:
 
-        plt.figure(figsize=(10,5))
-
-        order = data[col].value_counts().index
-
-        sns.countplot(
-            x=col,
-            data=data,
-            order=order
+        filename = (
+            f"{col.lower()}_count.png"
         )
 
-        plt.xticks(rotation=45)
+        counts = (
+            data[col]
+            .astype(str)
+            .value_counts()
+        )
 
-        plt.title(f"{col} Count")
+        fig, ax = plt.subplots(
+            figsize=(10, 5)
+        )
 
-        plt.tight_layout()
+        sns.barplot(
+            x=counts.index,
+            y=counts.values,
+            ax=ax
+        )
 
-        filename = f"{col.lower()}_count.png"
+        ax.set_title(
+            f"{col} Count"
+        )
 
-        plt.savefig(_chart_path(filename))
-        plt.close()
+        ax.set_xlabel(
+            col
+        )
+
+        ax.set_ylabel(
+            "Count"
+        )
+
+        ax.tick_params(
+            axis="x",
+            rotation=45
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
 
         charts.append(filename)
 
 
+    # ========================================================
+    # GENDER VS PLACEMENT
+    # ========================================================
 
-    if "Gender" in data.columns and "PlacementStatus" in data.columns:
+    if (
+        "Gender" in data.columns
+        and
+        "PlacementStatus" in data.columns
+    ):
 
-        plt.figure(figsize=(7,5))
+        filename = "gender_vs_placement.png"
+
+        fig, ax = plt.subplots(
+            figsize=(8, 5)
+        )
 
         sns.countplot(
             x="Gender",
             hue="PlacementStatus",
-            data=data
+            data=data,
+            ax=ax
         )
 
-        plt.title("Placement Status by Gender")
+        ax.set_title(
+            "Placement Status by Gender"
+        )
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("gender_vs_placement.png"))
-        plt.close()
+        ax.set_xlabel(
+            "Gender"
+        )
 
-        charts.append("gender_vs_placement.png")
+        ax.set_ylabel(
+            "Count"
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
 
 
+    # ========================================================
+    # COLLEGE TIER VS PLACEMENT
+    # ========================================================
 
-    if "CollegeTier" in data.columns and "PlacementStatus" in data.columns:
+    if (
+        "CollegeTier" in data.columns
+        and
+        "PlacementStatus" in data.columns
+    ):
 
-        plt.figure(figsize=(7,5))
+        filename = (
+            "college_tier_vs_placement.png"
+        )
+
+        fig, ax = plt.subplots(
+            figsize=(8, 5)
+        )
 
         sns.countplot(
             x="CollegeTier",
             hue="PlacementStatus",
-            data=data
+            data=data,
+            ax=ax
         )
 
-        plt.title("Placement Status by College Tier")
+        ax.set_title(
+            "Placement Status by College Tier"
+        )
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("college_tier_vs_placement.png"))
-        plt.close()
+        ax.set_xlabel(
+            "College Tier"
+        )
 
-        charts.append("college_tier_vs_placement.png")
+        ax.set_ylabel(
+            "Count"
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
 
 
+    # ========================================================
+    # SGPA TREND
+    # ========================================================
 
     sgpa_cols = [
         f"SGPA_Sem{i}"
-        for i in range(1,9)
+        for i in range(1, 9)
         if f"SGPA_Sem{i}" in data.columns
     ]
 
+
     if sgpa_cols:
 
-        avg_sgpa = data[sgpa_cols].mean()
+        filename = "sgpa_trend.png"
 
-        plt.figure(figsize=(8,5))
+        sgpa_data = data[
+            sgpa_cols
+        ].copy()
 
-        plt.plot(
-            avg_sgpa.index,
-            avg_sgpa.values,
-            marker="o"
+        for col in sgpa_cols:
+
+            sgpa_data[col] = pd.to_numeric(
+                sgpa_data[col],
+                errors="coerce"
+            )
+
+        avg_sgpa = (
+            sgpa_data
+            .mean()
         )
 
-        plt.title("Average SGPA Across Semesters")
-        plt.xlabel("Semester")
-        plt.ylabel("Average SGPA")
+        semesters = [
+            f"Sem{i}"
+            for i in range(
+                1,
+                len(avg_sgpa) + 1
+            )
+        ]
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("sgpa_trend.png"))
-        plt.close()
+        fig, ax = plt.subplots(
+            figsize=(8, 5)
+        )
 
-        charts.append("sgpa_trend.png")
+        ax.plot(
+            semesters,
+            avg_sgpa.values,
+            marker="o",
+            linewidth=2
+        )
 
+        ax.set_title(
+            "Average SGPA Across Semesters"
+        )
+
+        ax.set_xlabel(
+            "Semester"
+        )
+
+        ax.set_ylabel(
+            "Average SGPA"
+        )
+
+        ax.grid(
+            True,
+            alpha=0.3
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
+
+
+    # ========================================================
+    # SALARY DISTRIBUTION
+    # ========================================================
 
     if "Salary Package" in data.columns:
 
-        plt.figure(figsize=(7,5))
+        filename = "salary_distribution.png"
+
+        salary = pd.to_numeric(
+            data["Salary Package"],
+            errors="coerce"
+        ).dropna()
+
+        fig, ax = plt.subplots(
+            figsize=(8, 5)
+        )
 
         sns.histplot(
-            data["Salary Package"],
-            kde=True
+            salary,
+            kde=True,
+            ax=ax
         )
 
-        plt.title("Salary Package Distribution")
+        ax.set_title(
+            "Salary Package Distribution"
+        )
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("salary_distribution.png"))
-        plt.close()
+        ax.set_xlabel(
+            "Salary Package"
+        )
 
-        charts.append("salary_distribution.png")
+        ax.set_ylabel(
+            "Frequency"
+        )
+
+        fig.tight_layout()
+
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
 
 
-        plt.figure(figsize=(7,5))
+        # ====================================================
+        # SALARY BOXPLOT
+        # ====================================================
+
+        filename = "salary_boxplot.png"
+
+        fig, ax = plt.subplots(
+            figsize=(8, 4)
+        )
 
         sns.boxplot(
-            x=data["Salary Package"]
+            x=salary,
+            ax=ax
         )
 
-        plt.title("Salary Package Boxplot")
+        ax.set_title(
+            "Salary Package Boxplot"
+        )
 
-        plt.tight_layout()
-        plt.savefig(_chart_path("salary_boxplot.png"))
-        plt.close()
+        ax.set_xlabel(
+            "Salary Package"
+        )
 
-        charts.append("salary_boxplot.png")
+        fig.tight_layout()
 
+        fig.savefig(
+            _chart_path(filename),
+            dpi=120,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        charts.append(filename)
+
+
+    # ========================================================
+    # PAIRPLOT
+    # ========================================================
 
     pair_cols = [
         "CGPA",
@@ -365,29 +830,100 @@ def run_eda():
         "PlacementStatus"
     ]
 
-    pair_cols = [c for c in pair_cols if c in data.columns]
+    pair_cols = [
+        c for c in pair_cols
+        if c in data.columns
+    ]
+
 
     if len(pair_cols) >= 3:
 
-        sample_data = data[pair_cols].sample(
-            min(500, len(data)),
-            random_state=42
+        filename = "pairplot.png"
+
+        pair_data = data[
+            pair_cols
+        ].copy()
+
+        pair_data["CGPA"] = pd.to_numeric(
+            pair_data["CGPA"],
+            errors="coerce"
         )
 
-        g = sns.pairplot(
-            sample_data,
-            hue="PlacementStatus"
+        pair_data["AttendancePercent"] = pd.to_numeric(
+            pair_data["AttendancePercent"],
+            errors="coerce"
         )
 
-        g.savefig(_chart_path("pairplot.png"))
-        plt.close("all")
+        pair_data = pair_data.dropna()
 
-        charts.append("pairplot.png")
+        if len(pair_data) > 500:
+
+            pair_data = pair_data.sample(
+                500,
+                random_state=42
+            )
+
+        if len(pair_data) > 0:
+
+            g = sns.pairplot(
+                pair_data,
+                hue="PlacementStatus"
+            )
+
+            g.fig.suptitle(
+                "Relationship Between CGPA, Attendance and Placement",
+                y=1.02
+            )
+
+            g.savefig(
+                _chart_path(filename),
+                dpi=120,
+                bbox_inches="tight"
+            )
+
+            plt.close(
+                g.fig
+            )
+
+            charts.append(filename)
+
+
+    # ========================================================
+    # REMOVE OLD UNUSED CHARTS
+    # ========================================================
+
+    old_unused_charts = [
+        "missing_values.png",
+        "missing_heatmap.png",
+        "placement_status.png"
+    ]
+
+    for filename in old_unused_charts:
+
+        filepath = _chart_path(
+            filename
+        )
+
+        if os.path.exists(filepath):
+
+            try:
+                os.remove(filepath)
+            except Exception:
+                pass
+
+
+    # ========================================================
+    # RETURN RESULTS
+    # ========================================================
+
     return {
+
         "rows": len(data),
+
         "columns": len(data.columns),
+
         "duplicates": duplicates,
-        "missing": missing.to_dict(),
-        "target_counts": target_counts,
+
         "charts": charts
+
     }

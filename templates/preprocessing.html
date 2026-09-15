@@ -1,0 +1,1304 @@
+{% extends "base.html" %}
+
+{% block title %}
+Preprocessing
+{% endblock %}
+
+{% block content %}
+
+<div class="preprocess-header">
+
+    <h2>Data Preprocessing</h2>
+
+    <p>
+        Preparing the placement dataset for machine learning
+        by cleaning, transforming and scaling the data.
+    </p>
+
+</div>
+
+
+{% if error %}
+
+<div class="error">
+    {{ error }}
+</div>
+
+{% endif %}
+
+
+{% if results %}
+
+
+<!-- ==========================================================
+     SUCCESS MESSAGE
+=========================================================== -->
+
+<div class="success-box">
+
+    <div class="success-icon">
+        ✓
+    </div>
+
+    <div>
+
+        <h3>
+            {{ results.preprocessing_status }}
+        </h3>
+
+        <p>
+            The dataset has been cleaned and transformed
+            successfully for machine learning.
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     DATASET OVERVIEW
+=========================================================== -->
+
+<h3 class="section-title">
+    📊 Dataset Overview
+</h3>
+
+
+<div class="stats-grid">
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            📁
+        </div>
+
+        <div>
+
+            <span>
+                Original Rows
+            </span>
+
+            <strong>
+                {{ results.original_rows }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            📋
+        </div>
+
+        <div>
+
+            <span>
+                Original Columns
+            </span>
+
+            <strong>
+                {{ results.original_columns }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            📐
+        </div>
+
+        <div>
+
+            <span>
+                Final Rows
+            </span>
+
+            <strong>
+                {{ results.final_rows }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            🔢
+        </div>
+
+        <div>
+
+            <span>
+                Final Columns
+            </span>
+
+            <strong>
+                {{ results.final_columns }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ==========================================================
+     DATA CLEANING
+=========================================================== -->
+
+<h3 class="section-title">
+    🧹 Data Cleaning
+</h3>
+
+
+<div class="process-grid">
+
+
+    <!-- MISSING VALUES -->
+
+    <div class="process-card">
+
+        <div class="process-card-header">
+
+            <span class="process-icon">
+                🔍
+            </span>
+
+            <h3>
+                Missing Values
+            </h3>
+
+        </div>
+
+
+        <div class="process-value">
+
+            {{ results.missing_before_total }}
+
+        </div>
+
+        <p>
+            Missing values detected before preprocessing
+        </p>
+
+
+        <div class="process-result">
+
+            <strong>
+                {{ results.missing_after }}
+            </strong>
+
+            missing values remaining
+
+        </div>
+
+    </div>
+
+
+
+    <!-- DUPLICATES -->
+
+    <div class="process-card">
+
+        <div class="process-card-header">
+
+            <span class="process-icon">
+                🗑️
+            </span>
+
+            <h3>
+                Duplicate Rows
+            </h3>
+
+        </div>
+
+
+        <div class="process-value">
+
+            {{ results.duplicate_count }}
+
+        </div>
+
+        <p>
+            Duplicate rows detected
+        </p>
+
+
+        <div class="process-result">
+
+            <strong>
+                {{ results.duplicates_removed }}
+            </strong>
+
+            duplicate rows removed
+
+        </div>
+
+    </div>
+
+
+
+    <!-- IMPUTATION -->
+
+    <div class="process-card">
+
+        <div class="process-card-header">
+
+            <span class="process-icon">
+                🩹
+            </span>
+
+            <h3>
+                Missing Value Imputation
+            </h3>
+
+        </div>
+
+
+        <div class="process-value">
+
+            {{ results.total_imputed }}
+
+        </div>
+
+        <p>
+            Values filled during preprocessing
+        </p>
+
+
+        <div class="process-result">
+
+            Numerical:
+            <strong>
+                {{ results.numerical_imputation_count }}
+            </strong>
+
+            <br>
+
+            Categorical:
+            <strong>
+                {{ results.categorical_imputation_count }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ==========================================================
+     FEATURE INFORMATION
+=========================================================== -->
+
+<h3 class="section-title">
+    🧩 Feature Information
+</h3>
+
+
+<div class="feature-grid">
+
+
+    <div class="feature-card">
+
+        <span>
+            Numerical Features
+        </span>
+
+        <strong>
+            {{ results.numerical_count }}
+        </strong>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <span>
+            Categorical Features
+        </span>
+
+        <strong>
+            {{ results.categorical_count }}
+        </strong>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <span>
+            Encoded Features
+        </span>
+
+        <strong>
+            {{ results.encoded_count }}
+        </strong>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <span>
+            Scaled Features
+        </span>
+
+        <strong>
+            {{ results.scaling_count }}
+        </strong>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ==========================================================
+     TRANSFORMATION METHODS
+=========================================================== -->
+
+<h3 class="section-title">
+    ⚙️ Preprocessing Techniques
+</h3>
+
+
+<div class="techniques-container">
+
+
+    <div class="technique">
+
+        <div class="technique-number">
+            1
+        </div>
+
+        <div>
+
+            <h4>
+                Missing Value Handling
+            </h4>
+
+            <p>
+                Numerical missing values are replaced using
+                the median, while categorical missing values
+                are replaced using the mode.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="technique">
+
+        <div class="technique-number">
+            2
+        </div>
+
+        <div>
+
+            <h4>
+                Duplicate Removal
+            </h4>
+
+            <p>
+                Duplicate records are identified and removed
+                to avoid repeated observations.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="technique">
+
+        <div class="technique-number">
+            3
+        </div>
+
+        <div>
+
+            <h4>
+                One-Hot Encoding
+            </h4>
+
+            <p>
+                Categorical variables are converted into
+                numerical representation using one-hot encoding.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="technique">
+
+        <div class="technique-number">
+            4
+        </div>
+
+        <div>
+
+            <h4>
+                Standard Scaling
+            </h4>
+
+            <p>
+                Numerical input features are standardized using
+                StandardScaler so that they are placed on a
+                comparable scale.
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ==========================================================
+     TARGET INFORMATION
+=========================================================== -->
+
+<h3 class="section-title">
+    🎯 Target Information
+</h3>
+
+
+<div class="target-box">
+
+    <div>
+
+        <span>
+            Classification Target
+        </span>
+
+        <strong>
+            PlacementStatus
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            Regression Target
+        </span>
+
+        <strong>
+            Salary Package
+        </strong>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     SCALING INFORMATION
+=========================================================== -->
+
+<h3 class="section-title">
+    📏 Feature Scaling
+</h3>
+
+
+<div class="scaling-box">
+
+    <div class="scaling-method">
+
+        <span>
+            Scaling Method
+        </span>
+
+        <strong>
+            StandardScaler
+        </strong>
+
+    </div>
+
+
+    <div class="scaling-info">
+
+        <p>
+            StandardScaler transforms the numerical input
+            features to a common scale.
+        </p>
+
+        <p>
+            Target columns such as
+            <strong>PlacementStatus</strong> and
+            <strong>Salary Package</strong>
+            are not scaled.
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     PREPROCESSED DATA PREVIEW
+=========================================================== -->
+
+<h3 class="section-title">
+    👀 Preprocessed Data Preview
+</h3>
+
+
+<div class="preview-info">
+
+    <p>
+        The table below shows the first 10 rows of the
+        final preprocessed dataset.
+    </p>
+
+</div>
+
+
+<div class="table-wrapper">
+
+    {{ results.preview | safe }}
+
+</div>
+
+
+
+{% else %}
+
+
+<!-- ==========================================================
+     EMPTY STATE
+=========================================================== -->
+
+<div class="empty-state">
+
+    <div class="empty-icon">
+        ⚙️
+    </div>
+
+    <h3>
+        Preprocessing Not Run
+    </h3>
+
+    <p>
+        Run the preprocessing process to clean, transform
+        and prepare the dataset for machine learning.
+    </p>
+
+</div>
+
+
+{% endif %}
+
+
+
+<!-- ==========================================================
+     PAGE CSS
+=========================================================== -->
+
+<style>
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.preprocess-header {
+    margin-bottom: 30px;
+}
+
+
+.preprocess-header h2 {
+    margin-bottom: 10px;
+}
+
+
+.preprocess-header p {
+    color: #555;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+
+
+/* ==========================================================
+   SUCCESS BOX
+========================================================== */
+
+.success-box {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 20px 24px;
+
+    margin-bottom: 30px;
+
+    background: #ecfdf5;
+
+    border: 1px solid #a7f3d0;
+
+    border-radius: 12px;
+}
+
+
+.success-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #16a34a;
+
+    color: white;
+
+    border-radius: 50%;
+
+    font-size: 24px;
+
+    font-weight: bold;
+}
+
+
+.success-box h3 {
+
+    margin: 0 0 5px 0;
+
+    color: #166534;
+
+}
+
+
+.success-box p {
+
+    margin: 0;
+
+    color: #166534;
+
+}
+
+
+
+/* ==========================================================
+   SECTION TITLE
+========================================================== */
+
+.section-title {
+
+    margin-top: 32px;
+
+    margin-bottom: 18px;
+
+    font-size: 21px;
+}
+
+
+
+/* ==========================================================
+   DATASET STATS
+========================================================== */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+
+.stat-card {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 22px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.stat-icon {
+
+    width: 48px;
+
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #f1f5f9;
+
+    border-radius: 10px;
+
+    font-size: 24px;
+}
+
+
+.stat-card span {
+
+    display: block;
+
+    color: #666;
+
+    font-size: 14px;
+
+    margin-bottom: 5px;
+}
+
+
+.stat-card strong {
+
+    font-size: 24px;
+}
+
+
+
+/* ==========================================================
+   PROCESS GRID
+========================================================== */
+
+.process-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+
+.process-card {
+
+    background: #ffffff;
+
+    padding: 24px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.process-card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.process-card-header h3 {
+
+    margin: 0;
+
+    font-size: 18px;
+}
+
+
+.process-icon {
+
+    font-size: 25px;
+}
+
+
+.process-value {
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+    margin-top: 18px;
+}
+
+
+.process-card p {
+
+    color: #666;
+
+    margin: 5px 0 18px;
+
+    line-height: 1.5;
+}
+
+
+.process-result {
+
+    padding: 12px;
+
+    background: #f8fafc;
+
+    border-radius: 8px;
+
+    color: #555;
+
+    line-height: 1.7;
+}
+
+
+
+/* ==========================================================
+   FEATURE GRID
+========================================================== */
+
+.feature-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+
+.feature-card {
+
+    background: #ffffff;
+
+    padding: 22px;
+
+    text-align: center;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.feature-card span {
+
+    display: block;
+
+    color: #666;
+
+    margin-bottom: 8px;
+}
+
+
+.feature-card strong {
+
+    font-size: 27px;
+}
+
+
+
+/* ==========================================================
+   TECHNIQUES
+========================================================== */
+
+.techniques-container {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 18px;
+}
+
+
+.technique {
+
+    display: flex;
+
+    gap: 16px;
+
+    padding: 22px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.technique-number {
+
+    min-width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #2563eb;
+
+    color: white;
+
+    border-radius: 50%;
+
+    font-weight: 700;
+}
+
+
+.technique h4 {
+
+    margin: 0 0 7px 0;
+
+    font-size: 17px;
+}
+
+
+.technique p {
+
+    margin: 0;
+
+    color: #666;
+
+    line-height: 1.6;
+}
+
+
+
+/* ==========================================================
+   TARGET
+========================================================== */
+
+.target-box {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+}
+
+
+.target-box > div {
+
+    padding: 24px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.target-box span {
+
+    display: block;
+
+    color: #666;
+
+    margin-bottom: 8px;
+}
+
+
+.target-box strong {
+
+    font-size: 21px;
+}
+
+
+
+/* ==========================================================
+   SCALING
+========================================================== */
+
+.scaling-box {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+
+    padding: 24px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.scaling-method {
+
+    min-width: 220px;
+
+    padding: 20px;
+
+    background: #f8fafc;
+
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+
+.scaling-method span {
+
+    display: block;
+
+    color: #666;
+
+    margin-bottom: 8px;
+}
+
+
+.scaling-method strong {
+
+    font-size: 20px;
+}
+
+
+.scaling-info {
+
+    color: #555;
+
+    line-height: 1.6;
+}
+
+
+.scaling-info p {
+
+    margin-top: 0;
+}
+
+
+
+/* ==========================================================
+   PREVIEW
+========================================================== */
+
+.preview-info {
+
+    margin-bottom: 15px;
+
+    color: #666;
+}
+
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.data-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 900px;
+}
+
+
+.data-table th {
+
+    background: #f8fafc;
+
+    font-weight: 600;
+
+    padding: 13px 15px;
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    text-align: left;
+}
+
+
+.data-table td {
+
+    padding: 12px 15px;
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    white-space: nowrap;
+}
+
+
+.data-table tr:hover {
+
+    background: #f8fafc;
+}
+
+
+
+/* ==========================================================
+   EMPTY STATE
+========================================================== */
+
+.empty-state {
+
+    margin-top: 30px;
+
+    padding: 60px 30px;
+
+    text-align: center;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.08);
+}
+
+
+.empty-icon {
+
+    font-size: 50px;
+
+    margin-bottom: 15px;
+}
+
+
+.empty-state h3 {
+
+    margin-bottom: 10px;
+}
+
+
+.empty-state p {
+
+    color: #666;
+
+    max-width: 600px;
+
+    margin: auto;
+
+    line-height: 1.6;
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 1000px) {
+
+    .stats-grid,
+    .feature-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .process-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .stats-grid,
+    .feature-grid,
+    .techniques-container,
+    .target-box {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .scaling-box {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .scaling-method {
+
+        min-width: auto;
+    }
+
+}
+
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Placement Prediction Project{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h1>Placement Prediction Project</h1>
+</header>
+
+<div class="layout">
+
+    <!-- SAME SIDEBAR FOR ALL PAGES -->
+    <nav class="sidebar">
+
+        <ul>
+
+            <li>
+                <a href="{{ url_for('data_loading') }}"
+                   class="menu-item {% if active == 'data-loading' %}active{% endif %}">
+                    Data Loading
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('eda_page') }}"
+                   class="menu-item {% if active == 'eda' %}active{% endif %}">
+                    EDA
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('preprocessing_page') }}"
+                   class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
+                    Preprocessing
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('model_training_page') }}"
+                   class="menu-item {% if active == 'model-training' %}active{% endif %}">
+                    Model Training
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('linear_regression_page') }}"
+                   class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
+                    Linear Regression
+                </a>
+            </li>
+<li>
+    <a href="{{ url_for('logistic_regression_page') }}"
+       class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+        Logistic Regression
+    </a>
+</li>
+            <li>
+    <a href="{{ url_for('tree_based_models_page') }}"
+       class="menu-item {% if active == 'tree-based-models' %}active{% endif %}">
+        Tree Based Models
+    </a>
+</li>
+        </ul>
+
+    </nav>
+
+
+    <!-- ONLY THIS PART CHANGES -->
+    <main class="content">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+</body>
+</html>
