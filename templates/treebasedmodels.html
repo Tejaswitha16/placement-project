@@ -1,0 +1,1298 @@
+{% extends "base.html" %}
+
+{% block title %}Tree Based Models{% endblock %}
+
+{% block content %}
+
+<div class="lr-header">
+
+    <h2>Tree Based Models</h2>
+
+    <p>
+        Classification models for Placement Prediction
+    </p>
+
+</div>
+
+
+{% if error %}
+
+<div class="error-box">
+
+    <h3>Error</h3>
+
+    <p>{{ error }}</p>
+
+</div>
+
+{% endif %}
+
+
+
+<!-- MODEL DROPDOWNS -->
+
+<div class="lr-dropdown-container">
+
+
+    <!-- ID3 -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    🌳
+                </div>
+
+                <div>
+
+                    <h3>ID3</h3>
+
+                    <span class="lr-badge">
+                        Information Gain
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                Decision Tree using Information Gain
+                and Entropy.
+            </p>
+
+            <ul>
+
+                <li>
+                    Decision Tree classification
+                </li>
+
+                <li>
+                    Uses Information Gain
+                </li>
+
+                <li>
+                    Uses Entropy for splitting
+                </li>
+
+            </ul>
+
+
+            <a href="{{ url_for('id3_model') }}"
+               class="lr-button">
+
+                Run ID3 →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+
+    <!-- RANDOM FOREST -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    🌲
+                </div>
+
+                <div>
+
+                    <h3>Random Forest</h3>
+
+                    <span class="lr-badge ridge-badge">
+                        Ensemble Learning
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                Ensemble of multiple decision trees
+                for better prediction.
+            </p>
+
+            <ul>
+
+                <li>
+                    Ensemble classification
+                </li>
+
+                <li>
+                    Uses multiple decision trees
+                </li>
+
+                <li>
+                    Improves prediction performance
+                </li>
+
+            </ul>
+
+
+            <a href="{{ url_for('random_forest_model') }}"
+               class="lr-button ridge-button">
+
+                Run Random Forest →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+
+    <!-- ADABOOST -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    ⚡
+                </div>
+
+                <div>
+
+                    <h3>AdaBoost</h3>
+
+                    <span class="lr-badge">
+                        Boosting Algorithm
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                Boosting algorithm that combines
+                weak learners.
+            </p>
+
+            <ul>
+
+                <li>
+                    Boosting-based classification
+                </li>
+
+                <li>
+                    Combines weak learners
+                </li>
+
+                <li>
+                    Sequential learning approach
+                </li>
+
+            </ul>
+
+
+            <a href="{{ url_for('adaboost_model') }}"
+               class="lr-button">
+
+                Run AdaBoost →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+
+    <!-- GRADIENT BOOSTING -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    📈
+                </div>
+
+                <div>
+
+                    <h3>Gradient Boosting</h3>
+
+                    <span class="lr-badge ridge-badge">
+                        Gradient Boosting
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                Sequentially improves predictions
+                by reducing errors.
+            </p>
+
+            <ul>
+
+                <li>
+                    Boosting-based classification
+                </li>
+
+                <li>
+                    Sequential model improvement
+                </li>
+
+                <li>
+                    Reduces prediction errors
+                </li>
+
+            </ul>
+
+
+            <a href="{{ url_for('gradient_boosting_model') }}"
+               class="lr-button ridge-button">
+
+                Run Gradient Boosting →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+
+    <!-- XGBOOST -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    🚀
+                </div>
+
+                <div>
+
+                    <h3>XGBoost</h3>
+
+                    <span class="lr-badge">
+                        High Performance
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                High-performance gradient boosting
+                algorithm.
+            </p>
+
+            <ul>
+
+                <li>
+                    Gradient boosting classification
+                </li>
+
+                <li>
+                    High-performance algorithm
+                </li>
+
+                <li>
+                    Efficient model training
+                </li>
+
+            </ul>
+
+
+            <a href="{{ url_for('xgboost_model') }}"
+               class="lr-button">
+
+                Run XGBoost →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+
+    <!-- LIGHTGBM -->
+
+    <details class="lr-dropdown">
+
+        <summary>
+
+            <div class="lr-dropdown-title">
+
+                <div class="lr-icon">
+                    💡
+                </div>
+
+                <div>
+
+                    <h3>LightGBM</h3>
+
+                    <span class="lr-badge ridge-badge">
+                        Fast & Memory Efficient
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="lr-arrow">
+                ▼
+            </div>
+
+        </summary>
+
+
+        <div class="lr-dropdown-content">
+
+            <p>
+                Fast and memory-efficient gradient
+                boosting framework.
+            </p>
+
+            <ul>
+
+                <li>
+                    Gradient boosting classification
+                </li>
+
+                <li>
+                    Fast training
+                </li>
+
+                <li>
+                    Memory-efficient framework
+                </li>
+
+            </ul>
+
+
+            <a href="{{ url_for('lightgbm_model') }}"
+               class="lr-button ridge-button">
+
+                Run LightGBM →
+
+            </a>
+
+        </div>
+
+    </details>
+
+
+</div>
+
+
+
+{% if results %}
+
+<hr>
+
+
+<!-- RESULTS -->
+
+<div class="lr-result-section">
+
+    <h2>
+        {{ results.model_name }} Results
+    </h2>
+
+
+
+    <!-- MODEL INFORMATION -->
+
+    <div class="lr-info-box">
+
+        <h3>
+            Model Information
+        </h3>
+
+        <p>
+
+            <strong>Model:</strong>
+
+            {{ results.model_name }}
+
+        </p>
+
+
+        <p>
+
+            <strong>Target:</strong>
+
+            {{ results.target_column }}
+
+        </p>
+
+
+        <p>
+
+            <strong>Total Dataset Rows:</strong>
+
+            {{ results.total_rows }}
+
+        </p>
+
+
+        <p>
+
+            <strong>Features:</strong>
+
+            {{ results.total_features }}
+
+        </p>
+
+    </div>
+
+
+
+    <!-- TRAINING INFORMATION -->
+
+    <h3 class="section-title">
+        📊 Training Information
+    </h3>
+
+
+    <div class="lr-stats">
+
+
+        <div class="stat-box">
+
+            <span>
+                Training Data
+            </span>
+
+            <strong>
+                {{ results.training_rows }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <span>
+                Testing Data
+            </span>
+
+            <strong>
+                {{ results.testing_rows }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <span>
+                Features
+            </span>
+
+            <strong>
+                {{ results.total_features }}
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- PERFORMANCE METRICS -->
+
+    <h3 class="section-title">
+        📈 Performance Metrics
+    </h3>
+
+
+    <div class="lr-metrics">
+
+
+        <div class="metric-box highlight">
+
+            <span>
+                Accuracy
+            </span>
+
+            <strong>
+                {{ results.accuracy }}%
+            </strong>
+
+        </div>
+
+
+        <div class="metric-box">
+
+            <span>
+                Precision
+            </span>
+
+            <strong>
+                {{ results.precision }}%
+            </strong>
+
+        </div>
+
+
+        <div class="metric-box">
+
+            <span>
+                Recall
+            </span>
+
+            <strong>
+                {{ results.recall }}%
+            </strong>
+
+        </div>
+
+
+        <div class="metric-box">
+
+            <span>
+                F1 Score
+            </span>
+
+            <strong>
+                {{ results.f1 }}%
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- CONFUSION MATRIX -->
+
+    <h3 class="section-title">
+        🎯 Confusion Matrix
+    </h3>
+
+
+    <div class="table-wrapper">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+
+                    <th></th>
+
+                    <th>
+                        Predicted 0
+                    </th>
+
+                    <th>
+                        Predicted 1
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <th>
+                        Actual 0
+                    </th>
+
+                    <td>
+                        {{ results.confusion_matrix[0][0] }}
+                    </td>
+
+                    <td>
+                        {{ results.confusion_matrix[0][1] }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Actual 1
+                    </th>
+
+                    <td>
+                        {{ results.confusion_matrix[1][0] }}
+                    </td>
+
+                    <td>
+                        {{ results.confusion_matrix[1][1] }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- FEATURE IMPORTANCE -->
+
+    <h3 class="section-title">
+        🔍 Feature Importance
+    </h3>
+
+
+    <div class="table-wrapper">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Rank
+                    </th>
+
+                    <th>
+                        Feature
+                    </th>
+
+                    <th>
+                        Importance
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in results.feature_importance %}
+
+                <tr>
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+                        {{ item.feature }}
+                    </td>
+
+                    <td>
+                        {{ item.importance }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+{% endif %}
+
+
+
+<!-- PAGE-SPECIFIC CSS -->
+
+<style>
+
+    /* HEADER */
+
+    .lr-header {
+        margin-bottom: 30px;
+    }
+
+
+    .lr-header h2 {
+        margin-bottom: 10px;
+    }
+
+
+    .lr-header p {
+        color: #555;
+        font-size: 17px;
+    }
+
+
+
+    /* DROPDOWN CONTAINER */
+
+    .lr-dropdown-container {
+        width: 100%;
+        margin-top: 25px;
+    }
+
+
+
+    /* DROPDOWN */
+
+    .lr-dropdown {
+
+        background: #ffffff;
+
+        border: 1px solid #e3e6eb;
+
+        border-radius: 14px;
+
+        margin-bottom: 18px;
+
+        box-shadow:
+            0 5px 18px rgba(0, 0, 0, 0.08);
+
+        overflow: hidden;
+    }
+
+
+
+    /* REMOVE DEFAULT ARROW */
+
+    .lr-dropdown summary {
+        list-style: none;
+    }
+
+
+    .lr-dropdown summary::-webkit-details-marker {
+        display: none;
+    }
+
+
+
+    /* DROPDOWN HEADER */
+
+    .lr-dropdown summary {
+
+        cursor: pointer;
+
+        padding: 22px 28px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        transition: background 0.2s ease;
+    }
+
+
+    .lr-dropdown summary:hover {
+        background: #f8fafc;
+    }
+
+
+
+    /* TITLE */
+
+    .lr-dropdown-title {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 18px;
+    }
+
+
+    .lr-dropdown-title h3 {
+
+        margin: 0 0 8px 0;
+
+        font-size: 22px;
+    }
+
+
+
+    /* ICON */
+
+    .lr-icon {
+
+        font-size: 30px;
+
+        width: 50px;
+
+        height: 50px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        background: #f1f5f9;
+
+        border-radius: 12px;
+    }
+
+
+
+    /* BADGE */
+
+    .lr-badge {
+
+        display: inline-block;
+
+        padding: 6px 13px;
+
+        border-radius: 20px;
+
+        background: #e8f0ff;
+
+        color: #1d4ed8;
+
+        font-size: 13px;
+
+        font-weight: 600;
+    }
+
+
+    .ridge-badge {
+
+        background: #e8f8ef;
+
+        color: #15803d;
+    }
+
+
+
+    /* ARROW */
+
+    .lr-arrow {
+
+        font-size: 18px;
+
+        transition: transform 0.3s ease;
+    }
+
+
+    .lr-dropdown[open] .lr-arrow {
+
+        transform: rotate(180deg);
+    }
+
+
+
+    /* DROPDOWN CONTENT */
+
+    .lr-dropdown-content {
+
+        padding:
+            5px 28px 28px 28px;
+
+        border-top: 1px solid #eeeeee;
+    }
+
+
+    .lr-dropdown-content p {
+
+        color: #555;
+
+        font-size: 16px;
+
+        line-height: 1.7;
+
+        margin-top: 20px;
+    }
+
+
+    .lr-dropdown-content ul {
+
+        margin-top: 18px;
+
+        padding-left: 22px;
+    }
+
+
+    .lr-dropdown-content li {
+
+        margin-bottom: 12px;
+
+        color: #444;
+    }
+
+
+
+    /* BUTTON */
+
+    .lr-button {
+
+        display: inline-block;
+
+        margin-top: 15px;
+
+        padding: 12px 22px;
+
+        background: #2563eb;
+
+        color: white;
+
+        text-decoration: none;
+
+        border-radius: 8px;
+
+        font-weight: 600;
+
+        transition: 0.2s ease;
+    }
+
+
+    .lr-button:hover {
+
+        background: #1d4ed8;
+
+        transform: translateY(-1px);
+    }
+
+
+    .ridge-button {
+
+        background: #15803d;
+    }
+
+
+    .ridge-button:hover {
+
+        background: #166534;
+    }
+
+
+
+    /* RESULT SECTION */
+
+    .lr-result-section {
+
+        margin-top: 30px;
+
+        background: #ffffff;
+
+        padding: 30px;
+
+        border-radius: 14px;
+
+        box-shadow:
+            0 5px 18px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+    /* INFO BOX */
+
+    .lr-info-box {
+
+        margin-top: 25px;
+
+        padding: 22px;
+
+        background: #f8fafc;
+
+        border-left: 4px solid #2563eb;
+
+        border-radius: 8px;
+    }
+
+
+    .lr-info-box h3 {
+
+        margin-top: 0;
+    }
+
+
+    .lr-info-box p {
+
+        color: #555;
+
+        line-height: 1.7;
+    }
+
+
+
+    /* SECTION TITLE */
+
+    .section-title {
+
+        margin-top: 32px;
+
+        margin-bottom: 18px;
+    }
+
+
+
+    /* TRAINING STATS */
+
+    .lr-stats {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 18px;
+    }
+
+
+    .stat-box {
+
+        background: #f8fafc;
+
+        padding: 20px;
+
+        border-radius: 10px;
+
+        text-align: center;
+    }
+
+
+    .stat-box span {
+
+        display: block;
+
+        color: #666;
+
+        font-size: 14px;
+
+        margin-bottom: 8px;
+    }
+
+
+    .stat-box strong {
+
+        font-size: 24px;
+    }
+
+
+
+    /* METRICS */
+
+    .lr-metrics {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 18px;
+    }
+
+
+    .metric-box {
+
+        background: #f8fafc;
+
+        padding: 20px;
+
+        border-radius: 10px;
+
+        text-align: center;
+    }
+
+
+    .metric-box span {
+
+        display: block;
+
+        color: #666;
+
+        margin-bottom: 8px;
+    }
+
+
+    .metric-box strong {
+
+        font-size: 22px;
+    }
+
+
+    .metric-box.highlight {
+
+        border: 2px solid #2563eb;
+    }
+
+
+
+    /* TABLE */
+
+    .table-wrapper {
+
+        overflow-x: auto;
+    }
+
+
+    .data-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        background: #ffffff;
+    }
+
+
+    .data-table th,
+    .data-table td {
+
+        padding: 13px 15px;
+
+        border-bottom: 1px solid #e5e7eb;
+
+        text-align: left;
+    }
+
+
+    .data-table th {
+
+        background: #f8fafc;
+
+        font-weight: 600;
+    }
+
+
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+
+        .lr-stats {
+
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+
+        .lr-metrics {
+
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+        .lr-dropdown summary {
+
+            padding: 18px;
+        }
+
+
+        .lr-dropdown-title {
+
+            gap: 12px;
+        }
+
+
+        .lr-dropdown-title h3 {
+
+            font-size: 18px;
+        }
+
+
+        .lr-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            font-size: 24px;
+        }
+
+
+        .lr-dropdown-content {
+
+            padding:
+                5px 18px 22px 18px;
+        }
+
+
+        .lr-stats,
+        .lr-metrics {
+
+            grid-template-columns: 1fr;
+        }
+
+
+        .lr-result-section {
+
+            padding: 20px;
+        }
+
+    }
+
+</style>
+
+
+{% endblock %}
